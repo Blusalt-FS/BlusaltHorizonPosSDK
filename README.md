@@ -57,63 +57,13 @@ All the following to build.gradle (app level)
 ```sh
 
 dependencies{
-  implementation 'net.blusalt:mposplugin:1.0'
+  implementation 'net.blusalt:blusalthorizonlib:1.2-4'
 
-#Incase you get an error, add the following below
-  implementation 'com.dspread.print:dspread_print_sdk:1.2.0'
-  implementation 'com.dspread.library:dspread_pos_sdk:4.3.8'
-  
-  implementation 'androidx.appcompat:appcompat:1.6.1'
-  implementation 'com.google.android.material:material:1.9.0'
-  implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-
-  implementation 'com.github.davidmigloz:number-keyboard:3.1.0'
-  implementation 'me.abhinay.input:currency-edittext:1.1'
-
-  implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'
-
-  def nav_version = "2.3.5"
-  api "androidx.navigation:navigation-fragment:$nav_version"
-  api "androidx.navigation:navigation-ui:$nav_version"
-
-  api "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
-
-  implementation 'com.google.code.gson:gson:2.8.9'
-
-  api 'com.squareup.retrofit2:retrofit:2.9.0'
-  api 'com.squareup.okhttp3:logging-interceptor:4.9.0'
-  api 'com.squareup.retrofit2:converter-gson:2.9.0'
-  api 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
-  implementation 'com.github.poovamraj:PinEditTextField:1.2.6'
 }
 ```
 
 
 ## Usage
-
-## Kotlin
-```kt
-
-
-
-
-class MainActivity : AppActivityCompact {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_pos)
-        Pos.getINSTANCE().startMPOSplugin(this, "", object : TransactionCompletedCallBack {
-            override fun onSuccess(terminalResponse: TerminalResponse?) {
-
-            }
-
-            override fun onFailure(statusCode: Int, errorObject: String?) {
-
-            }
-
-
-        })
-    }
-}
 ```
 
 ## Java
@@ -123,19 +73,67 @@ class MainActivity extends AppActivityCompact {
     void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_pos);
+            new Pos().init(getApplication());
+            new Pos().configurePOS("api key", getApplicationContext(), listener);
 
-        Pos.getINSTANCE().startMPOSplugin(this, "", new TransactionCompletedCallBack() {
-            @Override
-            public void onSuccess(TerminalResponse terminalResponse) {
+            Pos.getINSTANCE().startPOSsdk(getApplicationContext(), 10.00, "", new TransactionCompletedCallBack() {
+                @Override
+                public void onSuccess(String terminalResponse) {
 
-            }
+                    TerminalInfoProcessor response = new Gson().fromJson(terminalResponse, TerminalInfoProcessor.class);
+                    Log.e("Result", terminalResponse);
 
-            @Override
-            public void onFailure(int statusCode, String errorObject) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), response.responseDescription, Toast.LENGTH_SHORT).show();
 
-            }
-        });
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(String.valueOf(response.responseCode))
+                            .setMessage(response.responseDescription)
+                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+//                                    new Pos().prepareForPrinter(getApplicationContext(), response);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    });
+                }
+
+                @Override
+                public void onFailure(int statusCode, String errorObject) {
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), errorObject, Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(String.valueOf(statusCode))
+                            .setMessage(errorObject)
+                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                    });
+                }
+            });
+
     }
+
+   TerminalKeyParamDownloadListener listener = new TerminalKeyParamDownloadListener() {
+        @Override
+        public void onSuccess(String message) {
+            Log.e("TAG: ", "Result: " + message);
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onFailed(String error) {
+            Log.e("TAG: ", "Result: " + error);
+            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+        }
+    };
 }
 
 
