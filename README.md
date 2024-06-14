@@ -92,7 +92,7 @@ class MainActivity extends AppActivityCompact {
                             .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-//                                    new Pos().prepareForPrinter(getApplicationContext(), response);
+//                                    new Pos().prepareForPrinter(getApplicationContext(), false, response);
                                     dialog.dismiss();
                                 }
                             })
