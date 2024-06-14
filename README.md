@@ -57,7 +57,7 @@ All the following to build.gradle (app level)
 ```sh
 
 dependencies{
-  implementation 'net.blusalt:blusalthorizonlib:1.2-4'
+  implementation 'net.blusalt:blusalthorizonlib:1.2-7'
 
 }
 ```
