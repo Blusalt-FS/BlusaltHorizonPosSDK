@@ -76,7 +76,7 @@ class MainActivity extends AppActivityCompact {
             new Pos().init(getApplication());
             new Pos().configurePOS("api key", getApplicationContext(), listener);
 
-            Pos.getINSTANCE().startPOSsdk(getApplicationContext(), 10.00, "", new TransactionCompletedCallBack() {
+            Pos.getINSTANCE().startPOSsdk("PURCHASE", getApplicationContext(), 1.00, true, "", new TransactionCompletedCallBack() {
                 @Override
                 public void onSuccess(String terminalResponse) {
 
