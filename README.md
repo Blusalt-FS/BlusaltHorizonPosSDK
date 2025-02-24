@@ -80,7 +80,7 @@ class MainActivity extends AppActivityCompact {
                 @Override
                 public void onSuccess(String terminalResponse) {
 
-                    TerminalInfoProcessor response = new Gson().fromJson(terminalResponse, TerminalInfoProcessor.class);
+                    TerminalResponse response = new Gson().fromJson(terminalResponse, TerminalResponse.class);
                     Log.e("Result", terminalResponse);
 
                     runOnUiThread(() -> {
